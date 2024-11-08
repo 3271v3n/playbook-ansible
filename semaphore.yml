@@ -1,0 +1,71 @@
+---
+- name: Instalar semaphore
+  hosts: semaphore
+  become: yes
+  tasks:
+    - name: cargar e instlar las dependencias de semaphore
+      apt:
+        name:
+          - git
+          - build-essential
+          - libmysqlclient-dev
+          - golang
+          - mysql-server
+        state: present
+        update_cache: yes
+
+    - name: correr mysql
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: crear la base de datos para semaphore
+      mysql_db:
+        name: semaphore_db
+        state: present
+
+    - name: crear el uasaurio de la DB
+      mysql_user:
+        name: semaphore
+        password: adminsemaphore
+        priv: "semaphore_db.*:ALL"
+        host: "%"
+        state: present
+
+    - name: traer y clonar repositorio de github
+      git:
+        repo: https://github.com/ansible-semaphore/semaphore.git
+        dest: /opt/semaphore
+
+    - name: construir el semaphore
+      command: make
+      args:
+        chdir: /opt/semaphore
+
+    - name: configurar el directorio
+      file:
+        path: /opt/semaphore/config
+        state: directory
+
+    - name: crear archivo de configuraccion
+      copy:
+        dest: /opt/semaphore/config/semaphore.json
+        content: |
+          {
+            "host": "0.0.0.0",
+            "port": "3000",
+            "database": {
+              "driver": "mysql",
+              "host": "localhost",
+              "port": 3306,
+              "user": "semaphore",
+              "password": "adminsemaphore",
+              "name": "semaphore_db"
+            }
+          }
+
+    - name: iniciar semaphore
+      command: /opt/semaphore/semaphore -config /opt/semaphore/config/semaphore.json
+      async: 10
+      poll: 0

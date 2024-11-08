@@ -1,0 +1,20 @@
+---
+- name: instalar el agente de zabbix
+  hosts: zabbix_agents
+  become: yes
+  tasks:
+    - name: instalar zabbix
+      apt:
+        name: zabbix-agent
+        state: present
+
+    - name: configurar el agente
+      template:
+        src: zabbix_agentd.conf.j2
+        dest: /etc/zabbix/zabbix_agentd.conf
+
+    - name: iniciar el agente
+      systemd:
+        name: zabbix-agent
+        state: started
+        enabled: yes
