@@ -17,42 +17,42 @@
         repo: "deb http://repo.zabbix.com/zabbix/{{ zabbix_version }}/ubuntu {{ ansible_lsb.codename }} main"
         state: present
 
-    - name: Agregar clave del repositorio de Zabbix
+    - name: ingresar clave repositorio de Zabbix
       apt_key:
         url: "https://repo.zabbix.com/zabbix/{{ zabbix_version }}/ubuntu/pool/main/z/zabbix/zabbix-release_{{ zabbix_version }}-1+ubuntu{{ ansible_lsb.codename }}_all.deb"
         state: present
 
-    - name: Instalar Zabbix Server
+    - name: instalar zabbix_server
       apt:
         name: "zabbix-server-mysql,zabbix-frontend,zabbix-apache-conf"
         state: present
 
-    - name: Instalar MariaDB
+    - name: instalar la base de datos
       apt:
         name: mariadb-server
         state: present
 
-    - name: Crear base de datos para Zabbix
+    - name: crear la DB
       mysql_db:
         name: zabbix
         state: present
 
-    - name: Crear usuario de base de datos para Zabbix
+    - name: crear el usuario admin
       mysql_user:
         name: zabbix
-        password: "zabbix_password"
+        password: "zabbixadmin"
         priv: "zabbix.*:ALL"
         state: present
 
-    - name: Importar esquema de base de datos de Zabbix
+    - name: importar esquema de base de datos
       command: "zcat /usr/share/doc/zabbix-server-mysql*/create/schema.sql.gz | mysql -uzabbix -pzabbix_password zabbix"
 
-    - name: Configurar Zabbix Server
+    - name: configurar server
       template:
         src: zabbix_server.conf.j2
         dest: /etc/zabbix/zabbix_server.conf
 
-    - name: Iniciar y habilitar Zabbix Server
+    - name: iniciar y habilitar servicios
       systemd:
         name: zabbix-server
         state: started
