@@ -1,0 +1,21 @@
+---
+- name: Instalar Zabbix Agent
+  hosts: zabbix_agent
+  become: yes
+  tasks:
+    - name: Instalar dependencias
+      apt:
+        name: zabbix-agent
+        state: present
+
+    - name: Configurar el archivo de configuración del agente
+      lineinfile:
+        path: /etc/zabbix/zabbix_agentd.conf
+        regexp: '^Server='
+        line: 'Server=IP_DEL_SERVIDOR_ZABBIX'  # Cambia esto a la IP del servidor Zabbix
+
+    - name: Iniciar y habilitar Zabbix Agent
+      systemd:
+        name: zabbix-agent
+        state: started
+        enabled: yes
