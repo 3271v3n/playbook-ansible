@@ -12,7 +12,7 @@
       lineinfile:
         path: /etc/zabbix/zabbix_agentd.conf
         regexp: '^Server='
-        line: 'Server=IP_DEL_SERVIDOR_ZABBIX'  # Cambia esto a la IP del servidor Zabbix
+        line: '192.168.0.47' 
 
     - name: Iniciar y habilitar Zabbix Agent
       systemd:
