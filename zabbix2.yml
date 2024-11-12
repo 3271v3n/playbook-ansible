@@ -5,7 +5,7 @@
   tasks:
     - name: Instalar dependencias
       apt:
-        name: zabbix-agents
+        name: zabbix-agent
         state: present
 
     - name: Configurar el archivo de configuración del agente
@@ -16,6 +16,6 @@
 
     - name: Iniciar y habilitar Zabbix Agent
       systemd:
-        name: zabbix-agents
+        name: zabbix-agent
         state: started
         enabled: yes
