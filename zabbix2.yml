@@ -1,11 +1,11 @@
 ---
 - name: Instalar Zabbix Agent
-  hosts: zabbix_agent
+  hosts: zabbix_agents
   become: yes
   tasks:
     - name: Instalar dependencias
       apt:
-        name: zabbix-agent
+        name: zabbix-agents
         state: present
 
     - name: Configurar el archivo de configuración del agente
@@ -16,6 +16,6 @@
 
     - name: Iniciar y habilitar Zabbix Agent
       systemd:
-        name: zabbix-agent
+        name: zabbix-agents
         state: started
         enabled: yes
